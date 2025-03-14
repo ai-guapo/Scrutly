@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scrutly</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      width: 450px;
+      margin: 0;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+    }
+
+    .logo {
+      width: 128px;
+      height: 48px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .cog, .close-btn {
+      cursor: pointer;
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      position: relative;
+    }
+
+    .cog img, .close-btn img {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .close-btn {
+      margin-right: 0;
+    }
+
+    .cog:hover::after, .close-btn:hover::after {
+      content: attr(data-hover);
+      position: absolute;
+      top: -25px;
+      right: 0;
+      background: #333;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 1000;
+    }
+
+    .tab-bar {
+      display: flex;
+      margin-top: 5px;
+    }
+
+    .tab {
+      flex: 1;
+      height: 20px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .tab.active {
+      background-color: #555;
+      color: #fff;
+    }
+
+    .tab.inactive {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 5px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .hash, .file-name {
+      font-family: monospace;
+      word-break: break-all;
+      cursor: pointer;
+    }
+
+    .hash:hover, .file-name:hover {
+      background-color: #f0f0f0;
+    }
+
+    .copied-overlay {
+      position: absolute;
+      background: #00cc00;
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+      font-size: 12px;
+      z-index: 10;
+    }
+
+    .buttons {
+      margin-top: 10px;
+    }
+
+    button {
+      margin-right: 10px;
+      padding: 5px 10px;
+    }
+
+    .settings {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 10px;
+      background: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      width: 250px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .settings-section {
+      margin-bottom: 10px;
+    }
+
+    .settings-section h4 {
+      margin: 0 0 5px;
+      text-decoration: underline;
+    }
+
+    .settings-section label {
+      display: block;
+      margin: 5px 0;
+    }
+
+    .file-input {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .file-input button {
+      padding: 4px 8px;
+    }
+
+    .file-input .status {
+      margin-left: 10px;
+    }
+
+    .file-input .instruction {
+      margin-left: 10px;
+    }
+
+    .file-input input[type="file"] {
+      display: none;
+    }
+
+    .remove-btn {
+      cursor: pointer;
+      color: red;
+      font-weight: bold;
+    }
+
+    .pagination {
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    .pagination button {
+      font-family: Arial, sans-serif;
+    }
+
+    .page-info {
+      margin: 0 10px;
+    }
+
+    .context-menu {
+      display: none;
+      position: absolute;
+      background: white;
+      border: 1px solid #ddd;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+
+    .context-menu div {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .context-menu div:hover {
+      background-color: #f0f0f0;
+    }
+
+    .context-menu .divider {
+      border-top: 1px solid #ddd;
+      padding: 0;
+      margin: 2px 0;
+    }
+
+    .controls-section {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .controls-section h3 {
+      text-align: center;
+      font-weight: bold;
+      margin: 0 0 10px;
+    }
+
+    .search-dorking-section {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .search-dorking-section h3 {
+      text-align: center;
+      font-weight: bold;
+      margin: 0 0 10px;
+    }
+
+    #jsTabContent {
+      padding: 10px;
+    }
+
+    #jsHeader {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #jsDomain {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    #jsListContainer {
+      max-height: 250px;
+      overflow-y: auto;
+      display: block;
+    }
+
+    #jsList, #unconventionalJsList {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 5px;
+      align-items: center;
+      width: 100%;
+    }
+
+    #jsList p, #unconventionalJsList p {
+      text-align: center;
+      margin: 10px 0;
+      padding: 5px;
+      color: #666;
+      grid-column: 1 / -1;
+    }
+
+    .js-name, .unconventional-js-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .link-text {
+      color: #0066cc;
+      text-decoration: none;
+      font-size: 12px;
+      padding: 5px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .link-text:hover {
+      color: #003366;
+      text-decoration: underline;
+    }
+
+    .js-button-container {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #jsMessage {
+      text-align: center;
+      color: #666;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .divider {
+      width: 50%;
+      margin: 10px auto;
+      border-top: 1px solid #ccc;
+    }
+
+    #unconventionalJsHeader {
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+      display: none;
+    }
+
+    #unconventionalJsList {
+      display: none;
+    }
+
+    .search-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 5px 0;
+    }
+
+    .search-option label {
+      margin-left: 5px;
+    }
+
+    .site-input {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+
+    .site-input input[type="text"] {
+      flex-grow: 1;
+      margin-left: 5px;
+      padding: 3px;
+    }
+
+    .search-term {
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-term span {
+      margin-right: 10px;
+    }
+
+    .search-term input[type="text"] {
+      width: 100%;
+      padding: 3px;
+    }
+
+    .search-term .modifier-group {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    .modifier-group label {
+      display: flex;
+      align-items: center;
+      margin-right: 15px;
+    }
+
+    .modifier-group input[type="checkbox"] {
+      margin-right: 5px;
+    }
+
+    .search-modifiers {
+      display: flex;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .search-modifiers .modifier-group {
+      display: grid;
+      grid-template-columns: 150px 1fr 100px;
+      align-items: center;
+      margin-top: 5px;
+      width: 100%;
+    }
+
+    .label-container, .exact-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .label-container span, .exact-container span {
+      margin-left: 5px;
+    }
+
+    .dorking-buttons {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .half-divider {
+      width: 50%;
+      margin: 5px auto;
+      border: 0;
+      border-top: 1px solid #ccc;
+    }
+
+    .validation-checkmark {
+      color: #ccc;
+      margin-right: 5px;
+    }
+
+    .validation-checkmark.active {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/upperlogo.png" class="logo" alt="Scrutly Logo">
+    <div class="header-right">
+      <div class="cog" id="settingsCog" data-hover="Settings">
+        <img src="icons/cog.png" alt="Settings">
+      </div>
+      <div class="close-btn" id="closeBtn" data-hover="Close menu">
+        <img src="icons/xout.png" alt="Close">
+      </div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" id="scrutlyTab">I</div>
+    <div class="tab inactive" id="jsTab">II</div>
+  </div>
+  <div class="tab-content active" id="scrutlyTabContent">
+    <div class="settings" id="settingsPanel">
+      <div class="settings-section">
+        <h4>File Hasher</h4>
+        <label><input type="checkbox" id="sha256Toggle" checked> Enable SHA-256</label>
+        <label><input type="checkbox" id="md5Toggle"> Enable MD5</label>
+      </div>
+      <div class="settings-section">
+        <h4>Search Dorking</h4>
+        <label><input type="checkbox" id="dorkingToggle"> Enable Dorking</label>
+      </div>
+    </div>
+    <div class="controls-section" id="fileHasherSection">
+      <h3>File Hasher</h3>
+      <div class="file-input">
+        <button id="fileButton">Choose File</button>
+        <input type="file" id="fileInput" />
+        <span class="status" id="fileStatus">No file chosen</span>
+        <span class="instruction">[Manually scan file to add to list]</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Date & Time</th>
+            <th>File</th>
+            <th>SHA-256</th>
+            <th>MD5</th>
+          </tr>
+        </thead>
+        <tbody id="hashList"></tbody>
+      </table>
+      <div class="pagination" id="pagination">
+        <button id="prevPage"></button>
+        <span class="page-info" id="pageInfo"></span>
+        <button id="nextPage"></button>
+      </div>
+      <div class="buttons">
+        <button id="clearList">Clear List</button>
+        <button id="saveList">Save List</button>
+      </div>
+    </div>
+    <div class="search-dorking-section" id="searchDorkingSection">
+      <h3>Search Dorking</h3>
+      <div class="search-option">
+        <span>Search Engine</span>
+        <div>
+          <input type="radio" id="googleRadio" name="searchEngine" value="google" checked>
+          <label for="googleRadio">Google</label>
+          <input type="radio" id="duckduckgoRadio" name="searchEngine" value="duckduckgo">
+          <label for="duckduckgoRadio">DuckDuckGo</label>
+        </div>
+      </div>
+      <div class="search-option">
+        <span>Only search this site? (optional)</span>
+      </div>
+      <div class="site-input">
+        <span class="validation-checkmark" id="siteValidation">✓</span>
+        <input type="text" id="siteInput" placeholder="Enter FQDN or root domain" maxlength="253">
+      </div>
+      <div class="search-term">
+        <span>Search for?</span>
+        <div class="modifier-group">
+          <label>
+            <input type="checkbox" id="exactPhraseToggle">
+            Exact
+          </label>
+          <label>
+            <input type="checkbox" id="similarTermsToggle">
+            Search synonyms terms
+          </label>
+        </div>
+        <input type="text" id="searchInput" placeholder="e.g., books" maxlength="2048">
+      </div>
+      <hr class="half-divider">
+      <div class="search-modifiers">
+        <div class="modifier-group">
+          <div class="label-container">
+            <input type="checkbox" id="minusTermToggle">
+            <span>Minus this term</span>
+          </div>
+          <input type="text" id="minusTermInput" maxlength="100">
+          <div class="exact-container">
+            <input type="checkbox" id="minusExactPhraseToggle">
+            <span>Exact</span>
+          </div>
+        </div>
+        <div class="modifier-group">
+          <div class="label-container">
+            <input type="checkbox" id="plusTermToggle">
+            <span>Plus this term</span>
+          </div>
+          <input type="text" id="plusTermInput" maxlength="100">
+          <div class="exact-container">
+            <input type="checkbox" id="plusExactPhraseToggle">
+            <span>Exact</span>
+          </div>
+        </div>
+        <div class="modifier-group">
+          <div class="label-container">
+            <input type="checkbox" id="fileTypesToggle">
+            <span>Search file type</span>
+          </div>
+          <input type="text" id="fileTypesInput" maxlength="100" placeholder="e.g., pdf, doc, etc.">
+          <div class="exact-container"></div>
+        </div>
+        <div class="modifier-group">
+          <div class="label-container">
+            <input type="checkbox" id="urlSearchToggle">
+            <span>Search URL for</span>
+          </div>
+          <input type="text" id="urlSearchInput" maxlength="100">
+          <div class="exact-container"></div>
+        </div>
+        <div class="modifier-group">
+          <div class="label-container">
+            <input type="checkbox" id="titleSearchToggle">
+            <span>Search title for</span>
+          </div>
+          <input type="text" id="titleSearchInput" maxlength="100">
+          <div class="exact-container"></div>
+        </div>
+      </div>
+      <div class="dorking-buttons">
+        <button id="clearDorking">Clear</button>
+        <button id="submitDorking">Submit</button>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" id="jsTabContent">
+    <div class="settings" id="jsSettingsPanel">
+      <div class="settings-section">
+        <h4>JS File List</h4>
+        <label><input type="checkbox" id="unconventionalJsToggle"> Enable Show Unconventional Named JS Files</label>
+      </div>
+    </div>
+    <div id="jsHeader">JavaScript file(s) found on</div>
+    <div id="jsDomain"></div>
+    <div id="jsListContainer">
+      <div id="jsList"></div>
+      <hr class="divider" id="unconventionalDivider" style="display: none;">
+      <div id="unconventionalJsHeader">Unconventional JavaScript file(s) found</div>
+      <div id="unconventionalJsList"></div>
+    </div>
+    <div class="js-button-container">
+      <button id="jsClearBtn">Refresh List</button>
+      <button id="jsSaveBtn">Save List</button>
+    </div>
+    <div id="jsMessage"></div>
+  </div>
+  <div id="contextMenu" class="context-menu">
+    <div id="virusTotalOption">Check hash with VirusTotal</div>
+    <div class="divider"></div>
+    <div id="jottiOption">Check hash with Jotti</div>
+  </div>
+  <script src="spark-md5.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
