@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/ae41337c-ef16-4e56-986d-cec0cf61c9a2" style="display: block; margin-bottom: 0;">
+  <img src="https://github.com/user-attachments/assets/ae41337c-ef16-4e56-986d-cec0cf61c9a2" style="display: block; margin-bottom: 0; height=400 width=450">
+<hr>
+ <img src="https://github.com/user-attachments/assets/72f83fcf-53d0-42e0-9159-15a36a21bc3e" height=400 width=400><img src="https://github.com/user-attachments/assets/8b2c9a13-19ee-473c-890a-8fb67beffdca" height=300 width=400>
+
   <div style="height: 1px; background-color: #ccc; width: 50%; margin: 0 auto;"></div><hr>
   <a href="https://microsoftedge.microsoft.com/addons/detail/scrutly/iconefldmpndglblbegnaflgnfnopjkd">
     <img src="https://github.com/user-attachments/assets/ea0b3a09-c5ae-41f4-b0ad-e9263e664f9c" alt="Get Scrutly for Microsoft Edge" style="display: block; margin-bottom: 0;">
